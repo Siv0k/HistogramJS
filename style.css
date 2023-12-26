@@ -1,0 +1,18 @@
+html {
+    background-color: azure;
+}
+
+.histogram {
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 5px solid #000;
+    border-left: 5px solid #000;
+    width: 100%;
+}
+
+.bar {
+    background-color: darkcyan;
+    margin-left: 5px;
+    text-align: center;
+    color: #fff;
+}
