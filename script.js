@@ -1,13 +1,15 @@
 function initHistogram() {
 	const dataInput = document.getElementById('dataInput').value;
-	const inputDataArray = dataInput.split(' ').filter(Number);
+	const validInputNumbers = dataInput
+		.split(' ')
+		.filter(item => !isNaN(Number(item)) && item !== '');
 
-	if (inputDataArray.length === 0) {
+	if (validInputNumbers.length === 0) {
 		alert("Введите данные!")
 		return;
 	}
 
-	drawHistogram(inputDataArray);
+	drawHistogram(validInputNumbers);
 }
 
 function drawHistogram(dataArray) {
