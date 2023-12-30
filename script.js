@@ -1,8 +1,6 @@
 function initHistogram() {
-	const dataInput = document.getElementById('dataInput').value;
-	const validInputNumbers = dataInput
-		.split(' ')
-		.filter(item => !isNaN(Number(item)) && item !== '');
+	const dataInput = document.querySelector('#dataInput').value;
+	const validInputNumbers = validateInput(dataInput);
 
 	if (validInputNumbers.length === 0) {
 		alert("Введите данные!")
@@ -12,23 +10,33 @@ function initHistogram() {
 	drawHistogram(validInputNumbers);
 }
 
+function validateInput(input) {
+	return input
+		.split(' ')
+		.filter(item => !isNaN(Number(item)) && item !== '')
+}
+
+function createBarElement() {
+	const bar = document.createElement('div');
+	bar.classList.add('bar');
+	return bar;
+}
+
 function drawHistogram(dataArray) {
-	const histogram = document.createElement('div');
 	const maxWidth = (window.screen.width / 100) * dataArray.length;
 	const maxElement = Math.max(...dataArray);
-	histogram.classList.add('histogram');
-	document.body.appendChild(histogram);
+	const histogram = document.querySelector('.histogram');
+	histogram.innerHTML = '';
 
 	dataArray.forEach((item) => {
-		const bar = document.createElement('div');
+		const bar = createBarElement();
 		const percentHeight = (item / maxElement) * 100;
-		bar.classList.add('bar');
 		bar.style.height = `${percentHeight}%`;
 		bar.style.width = `${maxWidth}%`;
-		bar.innerText = item;
+		bar.textContent = item;
 		histogram.appendChild(bar);
 	})
 }
 
-const inputButton = document.getElementById('inputButton');
+const inputButton = document.querySelector('#inputButton');
 inputButton.addEventListener('click', initHistogram);
