@@ -1,4 +1,6 @@
-import {createElementWithClass, validateData} from "/utilities/utilities.js";
+import "/src/styles/style.css";
+import "/src/index.html";
+import {createElementWithClass, validateData, clearHistogram} from "/src/utilities/utilities.js"
 
 function initHistogram() {
 	const dataInput = document.querySelector('#dataInput').value;
@@ -9,17 +11,17 @@ function initHistogram() {
 		return;
 	}
 
+	clearHistogram();
 	drawHistogram(validInputNumbers);
 }
 
 function drawHistogram(dataArray) {
 	const histogram = document.querySelector('.histogram');
-	histogram.innerHTML = '';
 	const maxWidth = (window.screen.width / 100) * dataArray.length;
 	const maxElement = Math.max(...dataArray);
 
 	dataArray.forEach((item) => {
-		const bar = createElementWithClass('div',  ['bar']);
+		const bar = createElementWithClass('div',  'bar');
 		const percentHeight = (item / maxElement) * 100;
 		bar.style.height = `${percentHeight}%`;
 		bar.style.width = `${maxWidth}%`;
@@ -29,7 +31,7 @@ function drawHistogram(dataArray) {
 }
 
 const input = document.querySelector('#dataInput');
-input.addEventListener('keydown', (e) => {
+input.addEventListener('keydown', e => {
 	if (e.key === 'Enter') {
 		initHistogram();
 	}
