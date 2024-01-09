@@ -1,6 +1,6 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
 
-export function initHistogram() {
+function initHistogram() {
 	const dataInput = document.querySelector('#dataInput').value;
 	const validInputNumbers = validateData(dataInput);
 
@@ -26,4 +26,16 @@ function drawHistogram(dataArray) {
 		bar.textContent = item;
 		histogram.appendChild(bar);
 	})
+}
+
+export function init() {
+	const input = document.querySelector('#dataInput');
+	input.addEventListener('keydown', e => {
+		if (e.key === 'Enter') {
+			initHistogram();
+		}
+	})
+
+	const inputButton = document.querySelector('#inputButton');
+	inputButton.addEventListener('click', initHistogram);
 }
