@@ -1,7 +1,7 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
 
 function initHistogram() {
-	const dataInput = document.querySelector('#dataInput').value;
+	const dataInput = document.getElementById('dataInput').value;
 	const validInputNumbers = validateData(dataInput);
 
 	if (validInputNumbers.length === 0) {
@@ -29,13 +29,13 @@ function drawHistogram(dataArray) {
 }
 
 export function init() {
-	const input = document.querySelector('#dataInput');
+	const input = document.getElementById('dataInput');
 	input.addEventListener('keydown', e => {
 		if (e.key === 'Enter') {
 			initHistogram();
 		}
 	})
 
-	const inputButton = document.querySelector('#inputButton');
+	const inputButton = document.getElementById('inputButton');
 	inputButton.addEventListener('click', initHistogram);
 }
