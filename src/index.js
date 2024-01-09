@@ -1,6 +1,16 @@
 import ".//styles/style.css";
-import {activateHistogramOnEnterOrClick} from "./histogram";
+import {initHistogram} from "./histogram";
 
-activateHistogramOnEnterOrClick();
+export function init() {
+	const input = document.querySelector('#dataInput');
+	input.addEventListener('keydown', e => {
+		if (e.key === 'Enter') {
+			initHistogram();
+		}
+	})
 
+	const inputButton = document.querySelector('#inputButton');
+	inputButton.addEventListener('click', initHistogram);
+}
 
+init()
