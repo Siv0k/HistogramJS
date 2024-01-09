@@ -1,6 +1,4 @@
-import "/src/styles/style.css";
-import "/src/index.html";
-import {createElementWithClass, validateData, clearHistogram} from "/src/utilities/utilities.js"
+import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
 
 function initHistogram() {
 	const dataInput = document.querySelector('#dataInput').value;
@@ -30,12 +28,14 @@ function drawHistogram(dataArray) {
 	})
 }
 
-const input = document.querySelector('#dataInput');
-input.addEventListener('keydown', e => {
-	if (e.key === 'Enter') {
-		initHistogram();
-	}
-})
+export function activateHistogramOnEnterOrClick() {
+	const input = document.querySelector('#dataInput');
+	input.addEventListener('keydown', e => {
+		if (e.key === 'Enter') {
+			initHistogram();
+		}
+	})
 
-const inputButton = document.querySelector('#inputButton');
-inputButton.addEventListener('click', initHistogram);
+	const inputButton = document.querySelector('#inputButton');
+	inputButton.addEventListener('click', initHistogram);
+}
