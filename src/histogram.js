@@ -1,4 +1,5 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
+import {sortArray} from "./utilities/bubleSort";
 
 function initHistogram() {
 	const dataInput = document.getElementById('dataInput').value;
@@ -30,6 +31,9 @@ function drawHistogram(dataArray) {
 
 export function init() {
 	const input = document.getElementById('dataInput');
+	const sortIncButton = document.getElementById('sortIncButton');
+	const sortDescButton = document.getElementById('sortDescButton');
+
 	input.addEventListener('keydown', e => {
 		if (e.key === 'Enter') {
 			initHistogram();
@@ -38,4 +42,12 @@ export function init() {
 
 	const inputButton = document.getElementById('inputButton');
 	inputButton.addEventListener('click', initHistogram);
+
+	sortDescButton.addEventListener('click', () => {
+		sortArray('desc');
+	})
+
+	sortIncButton.addEventListener('click', () => {
+		sortArray('asc')
+	})
 }
