@@ -43,11 +43,11 @@ export function init() {
 	const inputButton = document.getElementById('inputButton');
 	inputButton.addEventListener('click', initHistogram);
 
-	sortDescButton.addEventListener('click', () => {
-		sortArray('desc');
+	sortDescButton.addEventListener('click', async() => {
+		await sortArray('desc');
 	})
 
-	sortIncButton.addEventListener('click', () => {
-		sortArray('asc')
+	sortIncButton.addEventListener('click', async() => {
+		await sortArray('asc')
 	})
 }
