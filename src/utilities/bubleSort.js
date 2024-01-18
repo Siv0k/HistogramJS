@@ -9,31 +9,32 @@ function disableTransform() {
 	});
 }
 
-function buttonsOptions(option) {
+function setButtonsState(disabled) {
 	const buttons = document.querySelectorAll('.button');
 	buttons.forEach(button => {
-		button.disabled = option === 'disabled';
+		if (disabled) {
+			button.classList.add('disabled');
+		} else {
+			button.classList.remove('disabled');
+		}
 	});
 }
+
 
 async function animateSwap(element1, element2) {
 	const translateX1 = getTranslateX(element1);
 	const translateX2 = getTranslateX(element2);
 
-	element1.style.transition = 'transform 0.1s ease-in-out';
-	element2.style.transition = 'transform 0.1s ease-in-out';
-	element1.style.boxShadow = 'inset 0 0 0.5em 0 #00ffff, 0 0 0.5em 0 #00ffff';
-	element2.style.boxShadow = 'inset 0 0 0.5em 0 #00ffff, 0 0 0.5em 0 #00ffff';
+	element1.classList.add('animateSwap');
+	element2.classList.add('animateSwap');
 
 	setTranslateX(element1, translateX2 - translateX1);
 	setTranslateX(element2, translateX1 - translateX2);
 
-	await sleep(200);
+	await sleep(800);
 
-	element1.style.boxShadow = '';
-	element2.style.boxShadow = '';
-	element1.style.transition = 'none';
-	element2.style.transition = 'none';
+	element1.classList.remove('animateSwap');
+	element2.classList.remove('animateSwap');
 }
 
 function getTranslateX(element) {
@@ -48,7 +49,7 @@ function setTranslateX(element, translateX) {
 }
 
 async function sortArray(direction) {
-	buttonsOptions('disabled');
+	setButtonsState(true);
 	disableTransform();
 
 	const bars = Array.from(document.querySelectorAll('.bar'));
@@ -66,7 +67,7 @@ async function sortArray(direction) {
 			}
 		}
 	}
-	buttonsOptions('enabled');
+	setButtonsState(false);
 }
 
 export { sortArray };

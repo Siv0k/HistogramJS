@@ -21,6 +21,11 @@ html {
     background-color: #006666;
 }
 
+.button.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .histogram {
     display: flex;
     align-items: flex-end;
@@ -36,4 +41,10 @@ html {
     text-align: center;
     color: #000000;
     font-size: 20px;
+}
+
+.animateSwap {
+    transition: transform 0.4s linear;
+    box-shadow: 0 0 10px 0 #00ffff;
+    background-color: #00ffff;
 }
