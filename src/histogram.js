@@ -1,5 +1,5 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
-import {sortArray} from "./utilities/bubleSort";
+import {bubbleSort, resetOrder} from "./utilities/bubleSort";
 
 function initHistogram() {
 	const dataInput = document.getElementById('dataInput').value;
@@ -11,6 +11,7 @@ function initHistogram() {
 	}
 
 	clearHistogram();
+	resetOrder();
 	drawHistogram(validInputNumbers);
 }
 
@@ -20,7 +21,7 @@ function drawHistogram(dataArray) {
 	const maxElement = Math.max(...dataArray);
 
 	dataArray.forEach((item) => {
-		const bar = createElementWithClass('div',  'bar');
+		const bar = createElementWithClass('div', 'bar');
 		const percentHeight = (item / maxElement) * 100;
 		bar.style.height = `${percentHeight}%`;
 		bar.style.width = `${maxWidth}%`;
@@ -44,10 +45,10 @@ export function init() {
 	inputButton.addEventListener('click', initHistogram);
 
 	sortDescButton.addEventListener('click', async() => {
-		await sortArray('desc');
+		await bubbleSort('desc');
 	})
 
 	sortIncButton.addEventListener('click', async() => {
-		await sortArray('asc')
+		await bubbleSort('asc')
 	})
 }

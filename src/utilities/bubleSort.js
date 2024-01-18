@@ -1,35 +1,47 @@
+let barsOrder = null;
+
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function disableTransform() {
-	const bars = document.querySelectorAll('.bar');
-	bars.forEach(bar => {
-		bar.style.transform = 'none';
-	});
+function resetOrder() {
+	barsOrder = null;
+}
+
+function getBars() {
+	if (!barsOrder) {
+		barsOrder = Array.from(document.querySelectorAll('.bar'));
+	}
+	return barsOrder;
+}
+
+function getElementTranslateX(element) {
+	const rect = element.getBoundingClientRect();
+	return rect.left;
+}
+
+function setElementTranslateX(element, translateX) {
+	const style = window.getComputedStyle(element);
+	const matrix = new DOMMatrix(style.transform);
+	element.style.transform = `translateX(${matrix.e + translateX}px)`;
 }
 
 function setButtonsState(disabled) {
 	const buttons = document.querySelectorAll('.button');
 	buttons.forEach(button => {
-		if (disabled) {
-			button.classList.add('disabled');
-		} else {
-			button.classList.remove('disabled');
-		}
+		disabled ? button.classList.add('disabled') : button.classList.remove('disabled');
 	});
 }
 
-
-async function animateSwap(element1, element2) {
-	const translateX1 = getTranslateX(element1);
-	const translateX2 = getTranslateX(element2);
+async function swapAnimation(element1, element2) {
+	const translateX1 = getElementTranslateX(element1);
+	const translateX2 = getElementTranslateX(element2);
 
 	element1.classList.add('animateSwap');
 	element2.classList.add('animateSwap');
 
-	setTranslateX(element1, translateX2 - translateX1);
-	setTranslateX(element2, translateX1 - translateX2);
+	setElementTranslateX(element1, translateX2 - translateX1);
+	setElementTranslateX(element2, translateX1 - translateX2);
 
 	await sleep(800);
 
@@ -37,22 +49,9 @@ async function animateSwap(element1, element2) {
 	element2.classList.remove('animateSwap');
 }
 
-function getTranslateX(element) {
-	const rect = element.getBoundingClientRect();
-	return rect.left;
-}
-
-function setTranslateX(element, translateX) {
-	const style = window.getComputedStyle(element);
-	const matrix = new DOMMatrix(style.transform);
-	element.style.transform = `translateX(${matrix.e + translateX}px)`;
-}
-
-async function sortArray(direction) {
+async function bubbleSort(direction) {
 	setButtonsState(true);
-	disableTransform();
-
-	const bars = Array.from(document.querySelectorAll('.bar'));
+	const bars = getBars();
 
 	for (let i = 0; i < bars.length; i++) {
 		for (let j = 0; j < bars.length - 1; j++) {
@@ -62,12 +61,13 @@ async function sortArray(direction) {
 			const shouldSwap = (direction === 'asc' && current > next) || (direction === 'desc' && current < next);
 
 			if (shouldSwap) {
-				await animateSwap(bars[j], bars[j + 1]);
+				await swapAnimation(bars[j], bars[j + 1]);
 				[bars[j], bars[j + 1]] = [bars[j + 1], bars[j]];
 			}
 		}
 	}
+	barsOrder = bars;
 	setButtonsState(false);
 }
 
-export { sortArray };
+export {bubbleSort, resetOrder};
