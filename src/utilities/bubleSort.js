@@ -1,18 +1,20 @@
-let barsOrder = null;
+const ANIMATION_DURATION = 400;
+// let barsOrder = null;
+
+
+// function resetOrder() {
+// 	barsOrder = null;
+// }
+
+// function getBars() {
+// 	if (!barsOrder) {
+// 		barsOrder = Array.from(document.querySelectorAll('.bar'));
+// 	}
+// 	return barsOrder;
+// }
 
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function resetOrder() {
-	barsOrder = null;
-}
-
-function getBars() {
-	if (!barsOrder) {
-		barsOrder = Array.from(document.querySelectorAll('.bar'));
-	}
-	return barsOrder;
 }
 
 function getElementTranslateX(element) {
@@ -37,37 +39,42 @@ async function swapAnimation(element1, element2) {
 	const translateX1 = getElementTranslateX(element1);
 	const translateX2 = getElementTranslateX(element2);
 
-	element1.classList.add('animateSwap');
-	element2.classList.add('animateSwap');
-
 	setElementTranslateX(element1, translateX2 - translateX1);
 	setElementTranslateX(element2, translateX1 - translateX2);
 
-	await sleep(800);
-
-	element1.classList.remove('animateSwap');
-	element2.classList.remove('animateSwap');
+	await sleep(ANIMATION_DURATION);
 }
 
 async function bubbleSort(direction) {
 	setButtonsState(true);
-	const bars = getBars();
+	const histogram = document.querySelector('.histogram');
+	const bars = histogram.childNodes;
 
 	for (let i = 0; i < bars.length; i++) {
-		for (let j = 0; j < bars.length - 1; j++) {
+		for (let j = 0; j < bars.length - 1 - i; j++) {
 			const current = Number(bars[j].textContent);
 			const next = Number(bars[j + 1].textContent);
 
 			const shouldSwap = (direction === 'asc' && current > next) || (direction === 'desc' && current < next);
+			bars[j].classList.add('animateSwap');
+			bars[j + 1].classList.add('animateSwap');
+			await sleep(ANIMATION_DURATION);
 
 			if (shouldSwap) {
 				await swapAnimation(bars[j], bars[j + 1]);
-				[bars[j], bars[j + 1]] = [bars[j + 1], bars[j]];
+				bars[j].classList.remove('animateSwap');
+				bars[j + 1].classList.remove('animateSwap');
+				bars[j].style.transform = '';
+				bars[j + 1].style.transform = '';
+				bars[j + 1].after(bars[j]);
+			} else {
+				await sleep(ANIMATION_DURATION);
+				bars[j].classList.remove('animateSwap');
+				bars[j + 1].classList.remove('animateSwap');
 			}
 		}
 	}
-	barsOrder = bars;
 	setButtonsState(false);
 }
 
-export {bubbleSort, resetOrder};
+export {bubbleSort};

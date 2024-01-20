@@ -44,7 +44,7 @@ html {
 }
 
 .animateSwap {
-    transition: transform 0.4s linear;
+    transition: transform 0.2s linear;
     box-shadow: 0 0 10px 0 #004646;
     background-color: #004646;
 }

@@ -1,5 +1,5 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
-import {bubbleSort, resetOrder} from "./utilities/bubleSort";
+import {bubbleSort} from "./utilities/bubleSort";
 
 function initHistogram() {
 	const dataInput = document.getElementById('dataInput').value;
@@ -11,7 +11,6 @@ function initHistogram() {
 	}
 
 	clearHistogram();
-	resetOrder();
 	drawHistogram(validInputNumbers);
 }
 
