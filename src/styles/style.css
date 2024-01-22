@@ -21,9 +21,8 @@ html {
     background-color: #006666;
 }
 
-.button.disabled {
+.button:disabled {
     opacity: 0.5;
-    pointer-events: none;
 }
 
 .histogram {

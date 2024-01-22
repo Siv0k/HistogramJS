@@ -1,21 +1,6 @@
+import {sleep} from './utilities';
+
 const ANIMATION_DURATION = 400;
-// let barsOrder = null;
-
-
-// function resetOrder() {
-// 	barsOrder = null;
-// }
-
-// function getBars() {
-// 	if (!barsOrder) {
-// 		barsOrder = Array.from(document.querySelectorAll('.bar'));
-// 	}
-// 	return barsOrder;
-// }
-
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -31,7 +16,7 @@ function setElementTranslateX(element, translateX) {
 function setButtonsState(disabled) {
 	const buttons = document.querySelectorAll('.button');
 	buttons.forEach(button => {
-		disabled ? button.classList.add('disabled') : button.classList.remove('disabled');
+		button.disabled = disabled;
 	});
 }
 
@@ -43,6 +28,10 @@ async function swapAnimation(element1, element2) {
 	setElementTranslateX(element2, translateX1 - translateX2);
 
 	await sleep(ANIMATION_DURATION);
+
+	element1.style.transform = '';
+	element2.style.transform = '';
+	element2.after(element1);
 }
 
 async function bubbleSort(direction) {
@@ -52,26 +41,24 @@ async function bubbleSort(direction) {
 
 	for (let i = 0; i < bars.length; i++) {
 		for (let j = 0; j < bars.length - 1 - i; j++) {
-			const current = Number(bars[j].textContent);
-			const next = Number(bars[j + 1].textContent);
+			const currentElement = bars[j];
+			const nextElement = bars[j + 1];
 
-			const shouldSwap = (direction === 'asc' && current > next) || (direction === 'desc' && current < next);
-			bars[j].classList.add('animateSwap');
-			bars[j + 1].classList.add('animateSwap');
+			const currentValue = Number(currentElement.textContent);
+			const nextValue = Number(nextElement.textContent);
+
+			const shouldSwap = (direction === 'asc' && currentValue > nextValue) || (direction === 'desc' && currentValue < nextValue);
+			currentElement.classList.add('animateSwap');
+			nextElement.classList.add('animateSwap');
 			await sleep(ANIMATION_DURATION);
 
 			if (shouldSwap) {
-				await swapAnimation(bars[j], bars[j + 1]);
-				bars[j].classList.remove('animateSwap');
-				bars[j + 1].classList.remove('animateSwap');
-				bars[j].style.transform = '';
-				bars[j + 1].style.transform = '';
-				bars[j + 1].after(bars[j]);
+				await swapAnimation(currentElement, nextElement);
 			} else {
 				await sleep(ANIMATION_DURATION);
-				bars[j].classList.remove('animateSwap');
-				bars[j + 1].classList.remove('animateSwap');
 			}
+			currentElement.classList.remove('animateSwap');
+			nextElement.classList.remove('animateSwap');
 		}
 	}
 	setButtonsState(false);
