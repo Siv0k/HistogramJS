@@ -43,7 +43,7 @@ html {
 }
 
 .animateSwap {
-    transition: transform 0.2s linear;
+    transition: transform 0.25s linear;
 }
 
 .selectedElement {

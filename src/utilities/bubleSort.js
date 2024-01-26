@@ -1,6 +1,6 @@
 import {sleep} from './utilities';
 
-const ANIMATION_DURATION = 400;
+const ANIMATION_DURATION = 500;
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -59,8 +59,6 @@ async function bubbleSort(direction) {
 
 			if (shouldSwap) {
 				await swapAnimation(currentElement, nextElement);
-			} else {
-				await sleep(ANIMATION_DURATION);
 			}
 
 			currentElement.classList.remove('selectedElement');
