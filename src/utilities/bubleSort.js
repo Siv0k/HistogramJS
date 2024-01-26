@@ -1,6 +1,6 @@
 import {sleep} from './utilities';
 
-const ANIMATION_DURATION = 500;
+const ANIMATION_DURATION = 750;
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -26,6 +26,8 @@ async function swapAnimation(element1, element2) {
 
 	element1.classList.add('animateSwap');
 	element2.classList.add('animateSwap');
+	element1.classList.remove('selectedElement');
+	element2.classList.remove('selectedElement');
 
 	setElementTranslateX(element1, translateX2 - translateX1);
 	setElementTranslateX(element2, translateX1 - translateX2);

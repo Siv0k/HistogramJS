@@ -44,9 +44,12 @@ html {
 
 .animateSwap {
     transition: transform 0.25s linear;
+    background-color: #004646;
+    box-shadow: 0 0 10px 0 #004646;
 }
 
 .selectedElement {
+    transition: background-color 0.25s linear, box-shadow 0.25s linear;
     background-color: #004646;
     box-shadow: 0 0 10px 0 #004646;
 }
