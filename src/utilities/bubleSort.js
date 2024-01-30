@@ -1,6 +1,6 @@
 import {sleep} from './utilities';
 
-const ANIMATION_DURATION = 750;
+const ANIMATION_DURATION = 600;
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -24,11 +24,6 @@ async function swapAnimation(element1, element2) {
 	const translateX1 = getElementTranslateX(element1);
 	const translateX2 = getElementTranslateX(element2);
 
-	element1.classList.add('animateSwap');
-	element2.classList.add('animateSwap');
-	element1.classList.remove('selectedElement');
-	element2.classList.remove('selectedElement');
-
 	setElementTranslateX(element1, translateX2 - translateX1);
 	setElementTranslateX(element2, translateX1 - translateX2);
 
@@ -36,8 +31,6 @@ async function swapAnimation(element1, element2) {
 
 	element1.style.transform = '';
 	element2.style.transform = '';
-	element1.classList.remove('animateSwap');
-	element2.classList.remove('animateSwap');
 	element2.after(element1);
 }
 
@@ -55,16 +48,19 @@ async function bubbleSort(direction) {
 			const nextValue = Number(nextElement.textContent);
 
 			const shouldSwap = (direction === 'asc' && currentValue > nextValue) || (direction === 'desc' && currentValue < nextValue);
-			currentElement.classList.add('selectedElement');
-			nextElement.classList.add('selectedElement');
+			currentElement.classList.add('animateSwap');
+			nextElement.classList.add('animateSwap');
 			await sleep(ANIMATION_DURATION);
 
 			if (shouldSwap) {
 				await swapAnimation(currentElement, nextElement);
 			}
 
-			currentElement.classList.remove('selectedElement');
-			nextElement.classList.remove('selectedElement');
+			requestAnimationFrame(() => {
+				currentElement.classList.remove('animateSwap');
+				nextElement.classList.remove('animateSwap');
+			});
+			await sleep(ANIMATION_DURATION);
 		}
 	}
 	setButtonsState(false);
