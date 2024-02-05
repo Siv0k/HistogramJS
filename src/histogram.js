@@ -17,7 +17,7 @@ function drawHistogram(dataArray) {
 }
 
 export function init() {
-	let bubbleSort
+	let bubbleSort = function () {};
 	function initHistogram() {
 		const dataInput = document.getElementById('dataInput').value;
 		const validInputNumbers = validateData(dataInput);
