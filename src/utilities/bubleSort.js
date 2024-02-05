@@ -34,36 +34,47 @@ async function swapAnimation(element1, element2) {
 	element2.after(element1);
 }
 
-async function bubbleSort(direction) {
-	setButtonsState(true);
-	const histogram = document.querySelector('.histogram');
-	const bars = histogram.childNodes;
+function createBubbleSort() {
+	let i = 0;
+	let j = 0;
 
-	for (let i = 0; i < bars.length; i++) {
-		for (let j = 0; j < bars.length - 1 - i; j++) {
-			const currentElement = bars[j];
-			const nextElement = bars[j + 1];
+	return async function bubbleSort(direction) {
+		setButtonsState(true);
+		const histogram = document.querySelector('.histogram');
+		const bars = histogram.childNodes;
 
-			const currentValue = Number(currentElement.textContent);
-			const nextValue = Number(nextElement.textContent);
-
-			const shouldSwap = (direction === 'asc' && currentValue > nextValue) || (direction === 'desc' && currentValue < nextValue);
-			currentElement.classList.add('animateSwap');
-			nextElement.classList.add('animateSwap');
-			await sleep(ANIMATION_DURATION);
-
-			if (shouldSwap) {
-				await swapAnimation(currentElement, nextElement);
-			}
-
-			requestAnimationFrame(() => {
-				currentElement.classList.remove('animateSwap');
-				nextElement.classList.remove('animateSwap');
-			});
-			await sleep(ANIMATION_DURATION);
+		if (i >= bars.length) {
+			i = 0;
+			j = 0;
 		}
+
+		if (j >= bars.length - 1) {
+			i++;
+			j = 0;
+		}
+
+		const currentElement = bars[j];
+		const nextElement = bars[j + 1];
+
+		const currentValue = Number(currentElement.textContent);
+		const nextValue = Number(nextElement.textContent);
+
+		const shouldSwap = (direction === 'forwards' && currentValue > nextValue) || (direction === 'backward' && currentValue < nextValue);
+		currentElement.classList.add('animateSwap');
+		nextElement.classList.add('animateSwap');
+		await sleep(ANIMATION_DURATION);
+
+		if (shouldSwap) {
+			await swapAnimation(currentElement, nextElement);
+		}
+
+		requestAnimationFrame(() => {
+			currentElement.classList.remove('animateSwap');
+			nextElement.classList.remove('animateSwap');
+			j++;
+		})
+		setButtonsState(false);
 	}
-	setButtonsState(false);
 }
 
-export {bubbleSort};
+export {createBubbleSort};

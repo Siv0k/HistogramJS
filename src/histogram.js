@@ -1,18 +1,5 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
-import {bubbleSort} from "./utilities/bubleSort";
-
-function initHistogram() {
-	const dataInput = document.getElementById('dataInput').value;
-	const validInputNumbers = validateData(dataInput);
-
-	if (validInputNumbers.length === 0) {
-		alert("Введите данные!")
-		return;
-	}
-
-	clearHistogram();
-	drawHistogram(validInputNumbers);
-}
+import {createBubbleSort} from "./utilities/bubleSort";
 
 function drawHistogram(dataArray) {
 	const histogram = document.querySelector('.histogram');
@@ -30,6 +17,22 @@ function drawHistogram(dataArray) {
 }
 
 export function init() {
+	let bubbleSort
+	function initHistogram() {
+		const dataInput = document.getElementById('dataInput').value;
+		const validInputNumbers = validateData(dataInput);
+
+		if (validInputNumbers.length === 0) {
+			alert("Введите данные!")
+			return;
+		}
+
+		clearHistogram();
+		drawHistogram(validInputNumbers);
+
+		bubbleSort = createBubbleSort();
+	}
+
 	const input = document.getElementById('dataInput');
 	const sortIncButton = document.getElementById('sortIncButton');
 	const sortDescButton = document.getElementById('sortDescButton');
@@ -44,10 +47,11 @@ export function init() {
 	inputButton.addEventListener('click', initHistogram);
 
 	sortDescButton.addEventListener('click', async() => {
-		await bubbleSort('desc');
+		if (bubbleSort) await bubbleSort('backward');
+
 	})
 
 	sortIncButton.addEventListener('click', async() => {
-		await bubbleSort('asc')
+		if (bubbleSort) await bubbleSort('forwards')
 	})
 }
