@@ -34,46 +34,56 @@ async function swapAnimation(element1, element2) {
 	element2.after(element1);
 }
 
+async function animateAndSwap(currentElement, nextElement, shouldSwap) {
+	currentElement.classList.add('animateSwap');
+	nextElement.classList.add('animateSwap');
+	await sleep(ANIMATION_DURATION);
+
+	if (shouldSwap) {
+		await swapAnimation(currentElement, nextElement);
+	}
+
+	requestAnimationFrame(() => {
+		currentElement.classList.remove('animateSwap');
+		nextElement.classList.remove('animateSwap');
+	});
+
+	await sleep(ANIMATION_DURATION);
+}
+
 function createBubbleSort() {
 	let i = 0;
 	let j = 0;
+	const swapHistory = [];
 
 	return async function bubbleSort(direction) {
 		setButtonsState(true);
 		const histogram = document.querySelector('.histogram');
 		const bars = histogram.childNodes;
 
-		if (i >= bars.length) {
-			i = 0;
-			j = 0;
+		if (direction === 'backward' && j <= 0 && i > 0) {
+			i--;
+			j = bars.length - 1 - i;
 		}
 
-		if (j >= bars.length - 1) {
+		if (swapHistory.length && j > 0 && direction === 'backward') {
+			await animateAndSwap(bars[j - 1], bars[j], swapHistory[swapHistory.length-1]);
+			swapHistory.pop();
+			j--;
+		} else if (direction === 'forwards' && i < bars.length - 1) {
+			const shouldSwap = Number(bars[j].textContent) > Number(bars[j + 1].textContent);
+			await animateAndSwap(bars[j], bars[j + 1], shouldSwap);
+			swapHistory.push(shouldSwap);
+			j++;
+		}
+
+		if (j >= bars.length - 1 - i && i < bars.length - 1 && direction === 'forwards') {
 			i++;
 			j = 0;
 		}
 
-		const currentElement = bars[j];
-		const nextElement = bars[j + 1];
-
-		const currentValue = Number(currentElement.textContent);
-		const nextValue = Number(nextElement.textContent);
-
-		const shouldSwap = (direction === 'forwards' && currentValue > nextValue) || (direction === 'backward' && currentValue < nextValue);
-		currentElement.classList.add('animateSwap');
-		nextElement.classList.add('animateSwap');
-		await sleep(ANIMATION_DURATION);
-
-		if (shouldSwap) {
-			await swapAnimation(currentElement, nextElement);
-		}
-
-		requestAnimationFrame(() => {
-			currentElement.classList.remove('animateSwap');
-			nextElement.classList.remove('animateSwap');
-			j++;
-		})
 		setButtonsState(false);
+		console.log(swapHistory)
 	}
 }
 
