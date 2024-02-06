@@ -72,7 +72,9 @@ function createBubbleSort() {
 			}
 		}
 
-		setButtonsState(false);
+		setTimeout(() => {
+			setButtonsState(false);
+		}, ANIMATION_DURATION * 2);
 	}
 }
 
