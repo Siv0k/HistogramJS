@@ -47,11 +47,11 @@ export function init() {
 	inputButton.addEventListener('click', initHistogram);
 
 	sortDescButton.addEventListener('click', async() => {
-		if (bubbleSort) await bubbleSort('backward');
+		await bubbleSort('backward');
 
 	})
 
 	sortIncButton.addEventListener('click', async() => {
-		if (bubbleSort) await bubbleSort('forwards')
+		await bubbleSort('forwards')
 	})
 }
