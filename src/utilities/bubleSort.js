@@ -41,12 +41,12 @@ function swapAnimation(element1, element2, shouldSwap) {
 	}, ANIMATION_DURATION);
 }
 
-function createBubbleSort() {
+function createBubbleSortStepFunction() {
 	let i = 0;
 	let j = 0;
 	const swapHistory = [];
 
-	return function bubbleSort(direction) {
+	return function doStepBubbleSort(direction) {
 		setButtonsState(true);
 		const histogram = document.querySelector('.histogram');
 		const bars = histogram.childNodes;
@@ -78,4 +78,4 @@ function createBubbleSort() {
 	}
 }
 
-export {createBubbleSort};
+export {createBubbleSortStepFunction};

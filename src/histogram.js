@@ -1,5 +1,5 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
-import {createBubbleSort} from "./utilities/bubleSort";
+import {createBubbleSortStepFunction} from "./utilities/bubleSort";
 
 function drawHistogram(dataArray) {
 	const histogram = document.querySelector('.histogram');
@@ -17,7 +17,7 @@ function drawHistogram(dataArray) {
 }
 
 export function init() {
-	let bubbleSort = function () {};
+	let doStepBubbleSort = function () {};
 	function initHistogram() {
 		const dataInput = document.getElementById('dataInput').value;
 		const validInputNumbers = validateData(dataInput);
@@ -30,7 +30,7 @@ export function init() {
 		clearHistogram();
 		drawHistogram(validInputNumbers);
 
-		bubbleSort = createBubbleSort();
+		doStepBubbleSort = createBubbleSortStepFunction();
 	}
 
 	const input = document.getElementById('dataInput');
@@ -46,12 +46,12 @@ export function init() {
 	const inputButton = document.getElementById('inputButton');
 	inputButton.addEventListener('click', initHistogram);
 
-	sortDescButton.addEventListener('click', async() => {
-		await bubbleSort('backward');
+	sortDescButton.addEventListener('click', () => {
+		doStepBubbleSort('backward');
 
 	})
 
-	sortIncButton.addEventListener('click', async() => {
-		await bubbleSort('forwards')
+	sortIncButton.addEventListener('click', () => {
+		doStepBubbleSort('forwards')
 	})
 }
