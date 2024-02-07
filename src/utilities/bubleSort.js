@@ -1,4 +1,4 @@
-const ANIMATION_DURATION = 600;
+const ANIMATION_DURATION = 1000;
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -9,13 +9,6 @@ function setElementTranslateX(element, translateX) {
 	const style = window.getComputedStyle(element);
 	const matrix = new DOMMatrix(style.transform);
 	element.style.transform = `translateX(${matrix.e + translateX}px)`;
-}
-
-function setButtonsState(disabled) {
-	const buttons = document.querySelectorAll('.button');
-	buttons.forEach(button => {
-		button.disabled = disabled;
-	});
 }
 
 function swapAnimation(element1, element2, shouldSwap) {
@@ -33,49 +26,50 @@ function swapAnimation(element1, element2, shouldSwap) {
 			element1.style.transform = '';
 			element2.style.transform = '';
 			element2.after(element1);
-		}, ANIMATION_DURATION * 2);
+		}, ANIMATION_DURATION);
 	}
 	setTimeout(() => {
 		element1.classList.remove('animateSwap');
 		element2.classList.remove('animateSwap');
-	}, ANIMATION_DURATION);
+	}, ANIMATION_DURATION / 2);
 }
 
-function createBubbleSortStepFunction() {
+function createBubbleSortStep() {
 	let i = 0;
 	let j = 0;
 	const swapHistory = [];
+	const histogram = document.querySelector('.histogram');
+	const bars = histogram.childNodes;
 
 	return function doStepBubbleSort(direction) {
-		setButtonsState(true);
-		const histogram = document.querySelector('.histogram');
-		const bars = histogram.childNodes;
+
+		const lastBarIndex = bars.length - 1;
 		const isBackward = direction === 'backward';
 
-		if (isBackward && swapHistory.length) {
-			if (j <= 0 && i > 0) {
-				i--;
-				j = bars.length - 1 - i;
-			}
-			swapAnimation(bars[j - 1], bars[j], swapHistory.pop());
-			j--;
-		} else if (!isBackward) {
-			if (j >= bars.length - 1 - i && i < bars.length - 1) {
-				i++;
-				j = 0;
-			}
-			if (i < bars.length - 1) {
-				const shouldSwap = Number(bars[j].textContent) > Number(bars[j + 1].textContent);
-				swapAnimation(bars[j], bars[j + 1], shouldSwap);
-				swapHistory.push(shouldSwap);
-				j++;
-			}
+		if (j >= lastBarIndex - i && i < lastBarIndex && !isBackward) {
+			i++;
+			j = 0;
+		} else if (j <= 0 && i > 0 && isBackward) {
+			i--;
+			j = lastBarIndex - i;
 		}
 
-		setTimeout(() => {
-			setButtonsState(false);
-		}, ANIMATION_DURATION * 2);
+		const currentElement = isBackward && j > 0 ? bars[j - 1] : bars[j];
+		const nextElement = isBackward ? bars[j] : bars[j + 1];
+		const currentValue = Number(currentElement.textContent);
+		const nextValue = Number(nextElement.textContent);
+
+		const shouldSwap = isBackward ? swapHistory[swapHistory.length - 1] : currentValue > nextValue;
+
+		if (isBackward && swapHistory.length) {
+			swapHistory.pop();
+			j--;
+		} else if (!isBackward && i < lastBarIndex) {
+			swapHistory.push(shouldSwap);
+			j++;
+		}
+		swapAnimation(currentElement, nextElement, shouldSwap);
 	}
 }
 
-export {createBubbleSortStepFunction};
+export {createBubbleSortStep};
