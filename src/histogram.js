@@ -1,4 +1,4 @@
-import {clearHistogram, createElementWithClass, validateData, setButtonsState} from "./utilities/utilities";
+import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
 import {createBubbleSortStep} from "./utilities/bubleSort";
 
 function drawHistogram(dataArray) {
@@ -17,7 +17,12 @@ function drawHistogram(dataArray) {
 }
 
 export function init() {
-	let doStepBubbleSort = function () {};
+	let doStepBubbleSort = () => {};
+
+	const input = document.getElementById('dataInput');
+	const stepForwardButton = document.getElementById('stepForwardButton');
+	const stepBackwardButton = document.getElementById('stepBackwardButton');
+
 	function initHistogram() {
 		const dataInput = document.getElementById('dataInput').value;
 		const validInputNumbers = validateData(dataInput);
@@ -31,11 +36,10 @@ export function init() {
 		drawHistogram(validInputNumbers);
 
 		doStepBubbleSort = createBubbleSortStep();
+		stepForwardButton.disabled = false;
+		stepBackwardButton.disabled = true;
 	}
 
-	const input = document.getElementById('dataInput');
-	const stepForwardButton = document.getElementById('stepForwardButton');
-	const stepBackwardButton = document.getElementById('stepBackwardButton');
 
 	input.addEventListener('keydown', e => {
 		if (e.key === 'Enter') {
@@ -47,12 +51,10 @@ export function init() {
 	inputButton.addEventListener('click', initHistogram);
 
 	stepForwardButton.addEventListener('click', () => {
-		setButtonsState();
 		doStepBubbleSort('forward');
 	})
 
 	stepBackwardButton.addEventListener('click', () => {
-		setButtonsState()
 		doStepBubbleSort('backward');
 	})
 }

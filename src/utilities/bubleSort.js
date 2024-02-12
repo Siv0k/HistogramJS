@@ -1,4 +1,4 @@
-const ANIMATION_DURATION = 1000;
+const ANIMATION_DURATION = 800;
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -11,64 +11,82 @@ function setElementTranslateX(element, translateX) {
 	element.style.transform = `translateX(${matrix.e + translateX}px)`;
 }
 
-function swapAnimation(element1, element2, shouldSwap) {
-	element1.classList.add('animateSwap');
-	element2.classList.add('animateSwap');
+function swapAnimation(currentElement, nextElement, shouldSwap) {
+	currentElement.classList.add('animateSwap');
+	nextElement.classList.add('animateSwap');
 
 	if (shouldSwap) {
-		const translateX1 = getElementTranslateX(element1);
-		const translateX2 = getElementTranslateX(element2);
+		const translateX1 = getElementTranslateX(currentElement);
+		const translateX2 = getElementTranslateX(nextElement);
 
-		setElementTranslateX(element1, translateX2 - translateX1);
-		setElementTranslateX(element2, translateX1 - translateX2);
-
-		setTimeout(() => {
-			element1.style.transform = '';
-			element2.style.transform = '';
-			element2.after(element1);
-		}, ANIMATION_DURATION);
+		setElementTranslateX(currentElement, translateX2 - translateX1);
+		setElementTranslateX(nextElement, translateX1 - translateX2);
 	}
-	setTimeout(() => {
-		element1.classList.remove('animateSwap');
-		element2.classList.remove('animateSwap');
-	}, ANIMATION_DURATION / 2);
+
+	currentElement.addEventListener('transitionend', () => {
+		currentElement.classList.remove('animateSwap');
+		nextElement.classList.remove('animateSwap');
+
+		if (shouldSwap) {
+			setTimeout(() => {
+				currentElement.style.transform = '';
+				nextElement.style.transform = '';
+				nextElement.after(currentElement);
+			}, ANIMATION_DURATION / 2);
+		}
+
+	}, {once: true});
 }
 
 function createBubbleSortStep() {
-	let i = 0;
-	let j = 0;
+	let outerIndex = 0;
+	let innerIndex = 0;
+	const stepForwardButton = document.getElementById('stepForwardButton');
+	const stepBackwardButton = document.getElementById('stepBackwardButton');
 	const swapHistory = [];
 	const histogram = document.querySelector('.histogram');
 	const bars = histogram.childNodes;
+	const lastBarIndex = bars.length - 1;
 
-	return function doStepBubbleSort(direction) {
-
-		const lastBarIndex = bars.length - 1;
+	return direction => {
 		const isBackward = direction === 'backward';
 
-		if (j >= lastBarIndex - i && i < lastBarIndex && !isBackward) {
-			i++;
-			j = 0;
-		} else if (j <= 0 && i > 0 && isBackward) {
-			i--;
-			j = lastBarIndex - i;
+		if (innerIndex <= 0 && outerIndex > 0) {
+			outerIndex--;
+			innerIndex = lastBarIndex - outerIndex;
+		} else if (innerIndex >= lastBarIndex - outerIndex && !isBackward) {
+			outerIndex++;
+			innerIndex = 0;
 		}
 
-		const currentElement = isBackward && j > 0 ? bars[j - 1] : bars[j];
-		const nextElement = isBackward ? bars[j] : bars[j + 1];
+		const currentElement = isBackward && innerIndex > 0 ? bars[innerIndex - 1] : bars[innerIndex];
+		const nextElement = isBackward ? bars[innerIndex] : bars[innerIndex + 1];
 		const currentValue = Number(currentElement.textContent);
 		const nextValue = Number(nextElement.textContent);
 
-		const shouldSwap = isBackward ? swapHistory[swapHistory.length - 1] : currentValue > nextValue;
+		const shouldSwap = isBackward ? swapHistory.pop() : currentValue > nextValue;
 
-		if (isBackward && swapHistory.length) {
-			swapHistory.pop();
-			j--;
-		} else if (!isBackward && i < lastBarIndex) {
+		if (isBackward) {
+			innerIndex--;
+		} else {
 			swapHistory.push(shouldSwap);
-			j++;
+			innerIndex++;
 		}
-		swapAnimation(currentElement, nextElement, shouldSwap);
+
+		stepForwardButton.disabled = true;
+		stepBackwardButton.disabled = true;
+
+		swapAnimation(currentElement, nextElement, shouldSwap)
+
+		setTimeout(() => {
+			stepForwardButton.disabled = false;
+			stepBackwardButton.disabled = false;
+			if (outerIndex === 0 && innerIndex === 0 && isBackward) {
+				stepBackwardButton.disabled = true;
+			} else if (outerIndex === lastBarIndex) {
+				stepForwardButton.disabled = true;
+			}
+		}, ANIMATION_DURATION);
 	}
 }
 

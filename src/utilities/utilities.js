@@ -15,16 +15,4 @@ function clearHistogram() {
 	histogram.innerHTML = '';
 }
 
-function setButtonsState() {
-	const buttons = document.querySelectorAll('.button');
-	buttons.forEach(button => {
-		button.disabled = true;
-	});
-	setTimeout(() => {
-		buttons.forEach(button => {
-			button.disabled = false;
-		});
-	}, 1000);
-}
-
-export {createElementWithClass, validateData, clearHistogram, setButtonsState};
+export {createElementWithClass, validateData, clearHistogram};
