@@ -15,8 +15,4 @@ function clearHistogram() {
 	histogram.innerHTML = '';
 }
 
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export {createElementWithClass, validateData, clearHistogram, sleep};
+export {createElementWithClass, validateData, clearHistogram};

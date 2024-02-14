@@ -1,6 +1,4 @@
-import {sleep} from './utilities';
-
-const ANIMATION_DURATION = 600;
+const ANIMATION_DURATION = 700;
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -13,57 +11,85 @@ function setElementTranslateX(element, translateX) {
 	element.style.transform = `translateX(${matrix.e + translateX}px)`;
 }
 
-function setButtonsState(disabled) {
-	const buttons = document.querySelectorAll('.button');
-	buttons.forEach(button => {
-		button.disabled = disabled;
-	});
+function swapAnimation(currentElement, nextElement, shouldSwap, isBackward) {
+	const histogram = document.querySelector('.histogram');
+	const transitionElement = isBackward ? nextElement : currentElement;
+	currentElement.classList.add('animateSwap');
+	nextElement.classList.add('animateSwap');
+
+	if (shouldSwap) {
+		const translateX1 = getElementTranslateX(currentElement);
+		const translateX2 = getElementTranslateX(nextElement);
+
+		setElementTranslateX(currentElement, translateX2 - translateX1);
+		setElementTranslateX(nextElement, translateX1 - translateX2);
+	}
+
+	histogram.addEventListener('transitionend', () => {
+		currentElement.classList.remove('animateSwap');
+		nextElement.classList.remove('animateSwap');
+
+		if (shouldSwap) {
+			transitionElement.addEventListener('transitionend', () => {
+				currentElement.style.transform = '';
+				nextElement.style.transform = '';
+				nextElement.after(currentElement);
+			}, {once: true});
+		}
+	}, {once: true});
+
 }
 
-async function swapAnimation(element1, element2) {
-	const translateX1 = getElementTranslateX(element1);
-	const translateX2 = getElementTranslateX(element2);
-
-	setElementTranslateX(element1, translateX2 - translateX1);
-	setElementTranslateX(element2, translateX1 - translateX2);
-
-	await sleep(ANIMATION_DURATION);
-
-	element1.style.transform = '';
-	element2.style.transform = '';
-	element2.after(element1);
-}
-
-async function bubbleSort(direction) {
-	setButtonsState(true);
+function createBubbleSortStep() {
+	let outerIndex = 0;
+	let innerIndex = 0;
+	const stepForwardButton = document.getElementById('stepForwardButton');
+	const stepBackwardButton = document.getElementById('stepBackwardButton');
+	const swapHistory = [];
 	const histogram = document.querySelector('.histogram');
 	const bars = histogram.childNodes;
+	const lastBarIndex = bars.length - 1;
 
-	for (let i = 0; i < bars.length; i++) {
-		for (let j = 0; j < bars.length - 1 - i; j++) {
-			const currentElement = bars[j];
-			const nextElement = bars[j + 1];
+	return direction => {
+		const isBackward = direction === 'backward';
 
-			const currentValue = Number(currentElement.textContent);
-			const nextValue = Number(nextElement.textContent);
-
-			const shouldSwap = (direction === 'asc' && currentValue > nextValue) || (direction === 'desc' && currentValue < nextValue);
-			currentElement.classList.add('animateSwap');
-			nextElement.classList.add('animateSwap');
-			await sleep(ANIMATION_DURATION);
-
-			if (shouldSwap) {
-				await swapAnimation(currentElement, nextElement);
-			}
-
-			requestAnimationFrame(() => {
-				currentElement.classList.remove('animateSwap');
-				nextElement.classList.remove('animateSwap');
-			});
-			await sleep(ANIMATION_DURATION);
+		if (innerIndex <= 0 && outerIndex > 0) {
+			outerIndex--;
+			innerIndex = lastBarIndex - outerIndex;
+		} else if (innerIndex >= lastBarIndex - outerIndex && !isBackward) {
+			outerIndex++;
+			innerIndex = 0;
 		}
+
+		const currentElement = isBackward && innerIndex > 0 ? bars[innerIndex - 1] : bars[innerIndex];
+		const nextElement = isBackward ? bars[innerIndex] : bars[innerIndex + 1];
+		const currentValue = Number(currentElement.textContent);
+		const nextValue = Number(nextElement.textContent);
+
+		const shouldSwap = isBackward ? swapHistory.pop() : currentValue > nextValue;
+
+		if (isBackward) {
+			innerIndex--;
+		} else {
+			swapHistory.push(shouldSwap);
+			innerIndex++;
+		}
+
+		stepForwardButton.disabled = true;
+		stepBackwardButton.disabled = true;
+
+		swapAnimation(currentElement, nextElement, shouldSwap, isBackward);
+
+		setTimeout(() => {
+			stepForwardButton.disabled = false;
+			stepBackwardButton.disabled = false;
+			if (outerIndex === 0 && innerIndex === 0 && isBackward) {
+				stepBackwardButton.disabled = true;
+			} else if (outerIndex === lastBarIndex) {
+				stepForwardButton.disabled = true;
+			}
+		}, ANIMATION_DURATION);
 	}
-	setButtonsState(false);
 }
 
-export {bubbleSort};
+export {createBubbleSortStep};

@@ -1,18 +1,5 @@
 import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
-import {bubbleSort} from "./utilities/bubleSort";
-
-function initHistogram() {
-	const dataInput = document.getElementById('dataInput').value;
-	const validInputNumbers = validateData(dataInput);
-
-	if (validInputNumbers.length === 0) {
-		alert("Введите данные!")
-		return;
-	}
-
-	clearHistogram();
-	drawHistogram(validInputNumbers);
-}
+import {createBubbleSortStep} from "./utilities/bubleSort";
 
 function drawHistogram(dataArray) {
 	const histogram = document.querySelector('.histogram');
@@ -30,9 +17,28 @@ function drawHistogram(dataArray) {
 }
 
 export function init() {
+	let doStepBubbleSort = () => {};
+
 	const input = document.getElementById('dataInput');
-	const sortIncButton = document.getElementById('sortIncButton');
-	const sortDescButton = document.getElementById('sortDescButton');
+	const stepForwardButton = document.getElementById('stepForwardButton');
+	const stepBackwardButton = document.getElementById('stepBackwardButton');
+
+	function initHistogram() {
+		const dataInput = document.getElementById('dataInput').value;
+		const validInputNumbers = validateData(dataInput);
+
+		if (validInputNumbers.length === 0) {
+			alert("Введите данные!")
+			return;
+		}
+
+		clearHistogram();
+		drawHistogram(validInputNumbers);
+
+		doStepBubbleSort = createBubbleSortStep();
+		stepForwardButton.disabled = false;
+		stepBackwardButton.disabled = true;
+	}
 
 	input.addEventListener('keydown', e => {
 		if (e.key === 'Enter') {
@@ -43,11 +49,11 @@ export function init() {
 	const inputButton = document.getElementById('inputButton');
 	inputButton.addEventListener('click', initHistogram);
 
-	sortDescButton.addEventListener('click', async() => {
-		await bubbleSort('desc');
+	stepForwardButton.addEventListener('click', () => {
+		doStepBubbleSort('forward');
 	})
 
-	sortIncButton.addEventListener('click', async() => {
-		await bubbleSort('asc')
+	stepBackwardButton.addEventListener('click', () => {
+		doStepBubbleSort('backward');
 	})
 }
