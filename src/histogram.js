@@ -40,7 +40,6 @@ export function init() {
 		stepBackwardButton.disabled = true;
 	}
 
-
 	input.addEventListener('keydown', e => {
 		if (e.key === 'Enter') {
 			initHistogram();

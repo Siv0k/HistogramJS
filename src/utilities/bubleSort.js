@@ -1,4 +1,4 @@
-const ANIMATION_DURATION = 800;
+const ANIMATION_DURATION = 700;
 
 function getElementTranslateX(element) {
 	const rect = element.getBoundingClientRect();
@@ -11,7 +11,9 @@ function setElementTranslateX(element, translateX) {
 	element.style.transform = `translateX(${matrix.e + translateX}px)`;
 }
 
-function swapAnimation(currentElement, nextElement, shouldSwap) {
+function swapAnimation(currentElement, nextElement, shouldSwap, isBackward) {
+	const histogram = document.querySelector('.histogram');
+	const transitionElement = isBackward ? nextElement : currentElement;
 	currentElement.classList.add('animateSwap');
 	nextElement.classList.add('animateSwap');
 
@@ -23,19 +25,19 @@ function swapAnimation(currentElement, nextElement, shouldSwap) {
 		setElementTranslateX(nextElement, translateX1 - translateX2);
 	}
 
-	currentElement.addEventListener('transitionend', () => {
+	histogram.addEventListener('transitionend', () => {
 		currentElement.classList.remove('animateSwap');
 		nextElement.classList.remove('animateSwap');
 
 		if (shouldSwap) {
-			setTimeout(() => {
+			transitionElement.addEventListener('transitionend', () => {
 				currentElement.style.transform = '';
 				nextElement.style.transform = '';
 				nextElement.after(currentElement);
-			}, ANIMATION_DURATION / 2);
+			}, {once: true});
 		}
-
 	}, {once: true});
+
 }
 
 function createBubbleSortStep() {
@@ -76,7 +78,7 @@ function createBubbleSortStep() {
 		stepForwardButton.disabled = true;
 		stepBackwardButton.disabled = true;
 
-		swapAnimation(currentElement, nextElement, shouldSwap)
+		swapAnimation(currentElement, nextElement, shouldSwap, isBackward);
 
 		setTimeout(() => {
 			stepForwardButton.disabled = false;
