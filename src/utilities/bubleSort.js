@@ -1,95 +1,97 @@
 const ANIMATION_DURATION = 700;
+export class BubbleSort {
+	#outerIndex = 0;
+	#innerIndex = 0;
+	#stepForwardButton = null;
+	#stepBackwardButton = null;
+	#swapHistory = [];
+	#histogram = null;
+	#bars = null;
+	#lastBarIndex = null;
 
-function getElementTranslateX(element) {
-	const rect = element.getBoundingClientRect();
-	return rect.left;
-}
-
-function setElementTranslateX(element, translateX) {
-	const style = window.getComputedStyle(element);
-	const matrix = new DOMMatrix(style.transform);
-	element.style.transform = `translateX(${matrix.e + translateX}px)`;
-}
-
-function swapAnimation(currentElement, nextElement, shouldSwap, isBackward) {
-	const histogram = document.querySelector('.histogram');
-	const transitionElement = isBackward ? nextElement : currentElement;
-	currentElement.classList.add('animateSwap');
-	nextElement.classList.add('animateSwap');
-
-	if (shouldSwap) {
-		const translateX1 = getElementTranslateX(currentElement);
-		const translateX2 = getElementTranslateX(nextElement);
-
-		setElementTranslateX(currentElement, translateX2 - translateX1);
-		setElementTranslateX(nextElement, translateX1 - translateX2);
+	constructor(stepForwardButton, stepBackwardButton, histogram) {
+		this.#stepForwardButton = stepForwardButton;
+		this.#stepBackwardButton = stepBackwardButton;
+		this.#histogram = histogram;
+		this.#bars = histogram.childNodes;
+		this.#lastBarIndex = this.#bars.length - 1;
 	}
 
-	histogram.addEventListener('transitionend', () => {
-		currentElement.classList.remove('animateSwap');
-		nextElement.classList.remove('animateSwap');
+	#getElementTranslateX(element) {
+		const rect = element.getBoundingClientRect();
+		return rect.left;
+	}
+
+	#setElementTranslateX(element, translateX) {
+		const style = window.getComputedStyle(element);
+		const matrix = new DOMMatrix(style.transform);
+		element.style.transform = `translateX(${matrix.e + translateX}px)`;
+	}
+
+	#swapAnimation(currentElement, nextElement, shouldSwap, isBackward) {
+		const transitionElement = isBackward ? nextElement : currentElement;
+		currentElement.classList.add('animateSwap');
+		nextElement.classList.add('animateSwap');
 
 		if (shouldSwap) {
-			transitionElement.addEventListener('transitionend', () => {
-				currentElement.style.transform = '';
-				nextElement.style.transform = '';
-				nextElement.after(currentElement);
-			}, {once: true});
+			const translateX1 = this.#getElementTranslateX(currentElement);
+			const translateX2 = this.#getElementTranslateX(nextElement);
+
+			this.#setElementTranslateX(currentElement, translateX2 - translateX1);
+			this.#setElementTranslateX(nextElement, translateX1 - translateX2);
 		}
-	}, {once: true});
 
-}
+		this.#histogram.addEventListener('transitionend', () => {
+			currentElement.classList.remove('animateSwap');
+			nextElement.classList.remove('animateSwap');
 
-function createBubbleSortStep() {
-	let outerIndex = 0;
-	let innerIndex = 0;
-	const stepForwardButton = document.getElementById('stepForwardButton');
-	const stepBackwardButton = document.getElementById('stepBackwardButton');
-	const swapHistory = [];
-	const histogram = document.querySelector('.histogram');
-	const bars = histogram.childNodes;
-	const lastBarIndex = bars.length - 1;
+			if (shouldSwap) {
+				transitionElement.addEventListener('transitionend', () => {
+					currentElement.style.transform = '';
+					nextElement.style.transform = '';
+					nextElement.after(currentElement);
+				}, {once: true});
+			}
+		}, {once: true});
+	}
 
-	return direction => {
+	swapStep(direction) {
 		const isBackward = direction === 'backward';
 
-		if (innerIndex <= 0 && outerIndex > 0) {
-			outerIndex--;
-			innerIndex = lastBarIndex - outerIndex;
-		} else if (innerIndex >= lastBarIndex - outerIndex && !isBackward) {
-			outerIndex++;
-			innerIndex = 0;
+		if (this.#innerIndex <= 0 && this.#outerIndex > 0) {
+			this.#outerIndex--;
+			this.#innerIndex = this.#lastBarIndex - this.#outerIndex;
+		} else if (this.#innerIndex >= this.#lastBarIndex - this.#outerIndex && !isBackward) {
+			this.#outerIndex++;
+			this.#innerIndex = 0;
 		}
 
-		const currentElement = isBackward && innerIndex > 0 ? bars[innerIndex - 1] : bars[innerIndex];
-		const nextElement = isBackward ? bars[innerIndex] : bars[innerIndex + 1];
+		const currentElement = isBackward && this.#innerIndex > 0 ? this.#bars[this.#innerIndex - 1] : this.#bars[this.#innerIndex];
+		const nextElement = isBackward ? this.#bars[this.#innerIndex] : this.#bars[this.#innerIndex + 1];
 		const currentValue = Number(currentElement.textContent);
 		const nextValue = Number(nextElement.textContent);
-
-		const shouldSwap = isBackward ? swapHistory.pop() : currentValue > nextValue;
+		const shouldSwap = isBackward ? this.#swapHistory.pop() : currentValue > nextValue;
 
 		if (isBackward) {
-			innerIndex--;
+			this.#innerIndex--;
 		} else {
-			swapHistory.push(shouldSwap);
-			innerIndex++;
+			this.#swapHistory.push(shouldSwap);
+			this.#innerIndex++;
 		}
 
-		stepForwardButton.disabled = true;
-		stepBackwardButton.disabled = true;
+		this.#stepForwardButton.disabled = true;
+		this.#stepBackwardButton.disabled = true;
 
-		swapAnimation(currentElement, nextElement, shouldSwap, isBackward);
+		this.#swapAnimation(currentElement, nextElement, shouldSwap, isBackward);
 
 		setTimeout(() => {
-			stepForwardButton.disabled = false;
-			stepBackwardButton.disabled = false;
-			if (outerIndex === 0 && innerIndex === 0 && isBackward) {
-				stepBackwardButton.disabled = true;
-			} else if (outerIndex === lastBarIndex) {
-				stepForwardButton.disabled = true;
+			this.#stepForwardButton.disabled = false;
+			this.#stepBackwardButton.disabled = false;
+			if (this.#outerIndex === 0 && this.#innerIndex === 0 && isBackward) {
+				this.#stepBackwardButton.disabled = true;
+			} else if (this.#outerIndex === this.#lastBarIndex) {
+				this.#stepForwardButton.disabled = true;
 			}
 		}, ANIMATION_DURATION);
 	}
 }
-
-export {createBubbleSortStep};

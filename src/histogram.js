@@ -1,59 +1,83 @@
-import {clearHistogram, createElementWithClass, validateData} from "./utilities/utilities";
-import {createBubbleSortStep} from "./utilities/bubleSort";
+import {BubbleSort} from "./utilities/bubleSort";
 
-function drawHistogram(dataArray) {
-	const histogram = document.querySelector('.histogram');
-	const maxWidth = (window.screen.width / 100) * dataArray.length;
-	const maxElement = Math.max(...dataArray);
+export class Histogram {
+	#histogram = null;
+	#input = null;
+	#inputButton = null;
+	#bubbleSort = null;
+	#stepForwardButton = null;
+	#stepBackwardButton = null;
 
-	dataArray.forEach((item) => {
-		const bar = createElementWithClass('div', 'bar');
-		const percentHeight = (item / maxElement) * 100;
-		bar.style.height = `${percentHeight}%`;
-		bar.style.width = `${maxWidth}%`;
-		bar.textContent = item;
-		histogram.appendChild(bar);
-	})
-}
+	constructor(histogram, input, inputButton, stepForwardButton, stepBackwardButton) {
+		this.#histogram = histogram;
+		this.#input = input;
+		this.#inputButton = inputButton
+		this.#stepForwardButton = stepForwardButton;
+		this.#stepBackwardButton = stepBackwardButton;
+	}
 
-export function init() {
-	let doStepBubbleSort = () => {};
+	#drawHistogram(dataArray) {
+		const maxWidth = (window.screen.width / 100) * dataArray.length;
+		const maxElement = Math.max(...dataArray);
 
-	const input = document.getElementById('dataInput');
-	const stepForwardButton = document.getElementById('stepForwardButton');
-	const stepBackwardButton = document.getElementById('stepBackwardButton');
+		dataArray.forEach((item) => {
+			const bar = this.#createElementWithClass('div', 'bar');
+			const percentHeight = (item / maxElement) * 100;
+			bar.style.height = `${percentHeight}%`;
+			bar.style.width = `${maxWidth}%`;
+			bar.textContent = item;
+			this.#histogram.appendChild(bar);
+		})
+	}
 
-	function initHistogram() {
-		const dataInput = document.getElementById('dataInput').value;
-		const validInputNumbers = validateData(dataInput);
+	#initHistogram() {
+		const dataInput = this.#input.value;
+		const validInputNumbers = this.#validateData(dataInput);
 
 		if (validInputNumbers.length === 0) {
 			alert("Введите данные!")
 			return;
 		}
 
-		clearHistogram();
-		drawHistogram(validInputNumbers);
+		this.#clearHistogram()
+		this.#drawHistogram(validInputNumbers);
 
-		doStepBubbleSort = createBubbleSortStep();
-		stepForwardButton.disabled = false;
-		stepBackwardButton.disabled = true;
+		this.#bubbleSort = new BubbleSort(this.#stepForwardButton, this.#stepBackwardButton, this.#histogram);
+		this.#stepForwardButton.disabled = false;
+		this.#stepBackwardButton.disabled = true;
 	}
 
-	input.addEventListener('keydown', e => {
-		if (e.key === 'Enter') {
-			initHistogram();
-		}
-	})
+	#validateData(input) {
+		return input
+			.split(' ')
+			.filter(item => !isNaN(Number(item)) && item !== '')
+	}
 
-	const inputButton = document.getElementById('inputButton');
-	inputButton.addEventListener('click', initHistogram);
+	#createElementWithClass(element, classes) {
+		const newElement = document.createElement(element);
+		Array.isArray(classes) ? newElement.classList.add(...classes) : newElement.classList.add(classes);
+		return newElement;
+	}
 
-	stepForwardButton.addEventListener('click', () => {
-		doStepBubbleSort('forward');
-	})
+	#clearHistogram() {
+		this.#histogram.innerHTML = '';
+	}
 
-	stepBackwardButton.addEventListener('click', () => {
-		doStepBubbleSort('backward');
-	})
+	init() {
+		this.#input.addEventListener('keydown', e => {
+			if (e.key === 'Enter') {
+				this.#initHistogram();
+			}
+		})
+
+		this.#inputButton.addEventListener('click', () => this.#initHistogram());
+
+		this.#stepForwardButton.addEventListener('click', () => {
+			this.#bubbleSort.swapStep('forward');
+		})
+
+		this.#stepBackwardButton.addEventListener('click', () => {
+			this.#bubbleSort.swapStep('backward');
+		})
+	}
 }
