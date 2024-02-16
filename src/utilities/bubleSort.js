@@ -8,6 +8,8 @@ export class BubbleSort {
 	#histogram = null;
 	#bars = null;
 	#lastBarIndex = null;
+	#currentElement = null;
+	#nextElement = null;
 
 	constructor(stepForwardButton, stepBackwardButton, histogram) {
 		this.#stepForwardButton = stepForwardButton;
@@ -66,10 +68,10 @@ export class BubbleSort {
 			this.#innerIndex = 0;
 		}
 
-		const currentElement = isBackward && this.#innerIndex > 0 ? this.#bars[this.#innerIndex - 1] : this.#bars[this.#innerIndex];
-		const nextElement = isBackward ? this.#bars[this.#innerIndex] : this.#bars[this.#innerIndex + 1];
-		const currentValue = Number(currentElement.textContent);
-		const nextValue = Number(nextElement.textContent);
+		this.#currentElement = isBackward && this.#innerIndex > 0 ? this.#bars[this.#innerIndex - 1] : this.#bars[this.#innerIndex];
+		this.#nextElement = isBackward ? this.#bars[this.#innerIndex] : this.#bars[this.#innerIndex + 1];
+		const currentValue = Number(this.#currentElement.textContent);
+		const nextValue = Number(this.#nextElement.textContent);
 		const shouldSwap = isBackward ? this.#swapHistory.pop() : currentValue > nextValue;
 
 		if (isBackward) {
@@ -82,7 +84,7 @@ export class BubbleSort {
 		this.#stepForwardButton.disabled = true;
 		this.#stepBackwardButton.disabled = true;
 
-		this.#swapAnimation(currentElement, nextElement, shouldSwap, isBackward);
+		this.#swapAnimation(this.#currentElement, this.#nextElement, shouldSwap, isBackward);
 
 		setTimeout(() => {
 			this.#stepForwardButton.disabled = false;

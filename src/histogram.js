@@ -8,12 +8,10 @@ export class Histogram {
 	#stepForwardButton = null;
 	#stepBackwardButton = null;
 
-	constructor(histogram, input, inputButton, stepForwardButton, stepBackwardButton) {
+	constructor(histogram, input, inputButton) {
 		this.#histogram = histogram;
 		this.#input = input;
 		this.#inputButton = inputButton
-		this.#stepForwardButton = stepForwardButton;
-		this.#stepBackwardButton = stepBackwardButton;
 	}
 
 	#drawHistogram(dataArray) {
@@ -47,23 +45,13 @@ export class Histogram {
 		this.#stepBackwardButton.disabled = true;
 	}
 
-	#validateData(input) {
-		return input
-			.split(' ')
-			.filter(item => !isNaN(Number(item)) && item !== '')
-	}
-
-	#createElementWithClass(element, classes) {
-		const newElement = document.createElement(element);
-		Array.isArray(classes) ? newElement.classList.add(...classes) : newElement.classList.add(classes);
-		return newElement;
-	}
-
-	#clearHistogram() {
-		this.#histogram.innerHTML = '';
-	}
-
 	init() {
+		this.#stepForwardButton = this.#createButton('Step Forward');
+		this.#stepBackwardButton = this.#createButton('Step Backward');
+
+		this.#stepForwardButton.disabled = true;
+		this.#stepBackwardButton.disabled = true;
+
 		this.#input.addEventListener('keydown', e => {
 			if (e.key === 'Enter') {
 				this.#initHistogram();
@@ -79,5 +67,29 @@ export class Histogram {
 		this.#stepBackwardButton.addEventListener('click', () => {
 			this.#bubbleSort.swapStep('backward');
 		})
+	}
+
+	#createButton(textContent) {
+		const button = document.createElement('button');
+		button.textContent = textContent;
+		button.classList.add('button');
+		document.body.appendChild(button);
+		return button;
+	}
+
+	#validateData(input) {
+		return input
+			.split(' ')
+			.filter(item => !isNaN(Number(item)) && item !== '')
+	}
+
+	#createElementWithClass(element, classes) {
+		const newElement = document.createElement(element);
+		Array.isArray(classes) ? newElement.classList.add(...classes) : newElement.classList.add(classes);
+		return newElement;
+	}
+
+	#clearHistogram() {
+		this.#histogram.innerHTML = '';
 	}
 }
