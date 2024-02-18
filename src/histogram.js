@@ -3,18 +3,18 @@ import {BubbleSort} from "./utilities/bubleSort";
 export class Histogram {
 	#histogram = null;
 	#input = null;
-	#inputButton = null;
 	#bubbleSort = null;
 	#stepForwardButton = null;
 	#stepBackwardButton = null;
 
-	constructor(histogram, input, inputButton) {
-		this.#histogram = histogram;
+	constructor(input) {
 		this.#input = input;
-		this.#inputButton = inputButton
 	}
 
 	#drawHistogram(dataArray) {
+		this.#histogram = this.#createElementWithClass('div', 'histogram');
+		document.body.appendChild(this.#histogram);
+
 		const maxWidth = (window.screen.width / 100) * dataArray.length;
 		const maxElement = Math.max(...dataArray);
 
@@ -37,7 +37,6 @@ export class Histogram {
 			return;
 		}
 
-		this.#clearHistogram()
 		this.#drawHistogram(validInputNumbers);
 
 		this.#bubbleSort = new BubbleSort(this.#stepForwardButton, this.#stepBackwardButton, this.#histogram);
@@ -48,17 +47,7 @@ export class Histogram {
 	init() {
 		this.#stepForwardButton = this.#createButton('Step Forward');
 		this.#stepBackwardButton = this.#createButton('Step Backward');
-
-		this.#stepForwardButton.disabled = true;
-		this.#stepBackwardButton.disabled = true;
-
-		this.#input.addEventListener('keydown', e => {
-			if (e.key === 'Enter') {
-				this.#initHistogram();
-			}
-		})
-
-		this.#inputButton.addEventListener('click', () => this.#initHistogram());
+		this.#initHistogram();
 
 		this.#stepForwardButton.addEventListener('click', () => {
 			this.#bubbleSort.swapStep('forward');
@@ -87,9 +76,5 @@ export class Histogram {
 		const newElement = document.createElement(element);
 		Array.isArray(classes) ? newElement.classList.add(...classes) : newElement.classList.add(classes);
 		return newElement;
-	}
-
-	#clearHistogram() {
-		this.#histogram.innerHTML = '';
 	}
 }
