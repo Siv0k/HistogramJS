@@ -2,13 +2,14 @@ import {BubbleSort} from "./utilities/bubleSort";
 
 export class Histogram {
 	#histogram = null;
-	#input = null;
+	#dataInput = null;
 	#bubbleSort = null;
 	#stepForwardButton = null;
 	#stepBackwardButton = null;
 
-	constructor(input) {
-		this.#input = input;
+	constructor(dataInput) {
+		this.#dataInput = dataInput;
+		this.#initHistogram()
 	}
 
 	#drawHistogram(dataArray) {
@@ -29,8 +30,7 @@ export class Histogram {
 	}
 
 	#initHistogram() {
-		const dataInput = this.#input.value;
-		const validInputNumbers = this.#validateData(dataInput);
+		const validInputNumbers = this.#validateData(this.#dataInput);
 
 		if (validInputNumbers.length === 0) {
 			alert("Введите данные!")
@@ -39,15 +39,12 @@ export class Histogram {
 
 		this.#drawHistogram(validInputNumbers);
 
+		this.#stepForwardButton = this.#createButton('Step Forward');
+		this.#stepBackwardButton = this.#createButton('Step Backward');
+
 		this.#bubbleSort = new BubbleSort(this.#stepForwardButton, this.#stepBackwardButton, this.#histogram);
 		this.#stepForwardButton.disabled = false;
 		this.#stepBackwardButton.disabled = true;
-	}
-
-	init() {
-		this.#stepForwardButton = this.#createButton('Step Forward');
-		this.#stepBackwardButton = this.#createButton('Step Backward');
-		this.#initHistogram();
 
 		this.#stepForwardButton.addEventListener('click', () => {
 			this.#bubbleSort.swapStep('forward');
